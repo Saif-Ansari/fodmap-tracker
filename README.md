@@ -1,4 +1,4 @@
-# 🌿 Gut Tracker
+# 🌿 FODMAP Tracker
 
 A personal health tracking app for managing the [Monash University Low-FODMAP protocol](https://www.monashfodmap.com/) — a clinician-recommended dietary intervention for IBS and related gut conditions.
 

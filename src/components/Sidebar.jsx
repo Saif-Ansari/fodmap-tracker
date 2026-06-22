@@ -11,7 +11,7 @@ const TABS = [
 const Sidebar = ({ activeTab, onTabChange, onSignOut }) => (
   <aside className="sidebar">
     <div style={{ marginBottom: 36 }}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>🌿 Gut Tracker</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>🌿 FODMAP Tracker</div>
       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5, letterSpacing: '0.03em' }}>
         LOW-FODMAP · ELIMINATION
       </div>

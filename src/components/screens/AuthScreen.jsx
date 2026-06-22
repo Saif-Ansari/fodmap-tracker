@@ -39,7 +39,7 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
       <div style={{ width: '100%', maxWidth: 400 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>🌿</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>Gut Tracker</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>FODMAP Tracker</div>
           <div style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>Low-FODMAP Elimination Protocol</div>
         </div>
 
