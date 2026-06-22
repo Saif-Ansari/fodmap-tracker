@@ -87,12 +87,13 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
             {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setMessage(''); }}
+              disabled={mode === 'signin'}
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#0B6B5B',
+                color: mode === 'signin' ? '#D1D5DB' : '#0B6B5B',
                 fontWeight: 600,
-                cursor: 'pointer',
+                cursor: mode === 'signin' ? 'default' : 'pointer',
                 fontSize: 13,
                 fontFamily: 'inherit',
               }}
