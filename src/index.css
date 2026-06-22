@@ -1,0 +1,92 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #FAFAF8;
+}
+
+/* ── Mobile layout (default) ── */
+.app-layout {
+  max-width: 430px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+  position: relative;
+}
+
+.sidebar {
+  display: none;
+}
+
+/* ── Desktop layout (≥ 768px) ── */
+@media (min-width: 768px) {
+
+  /* Fixed sidebar — always flush to left, always full height, no flex tricks */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    overflow-y: auto;
+    background: #0B6B5B;
+    padding: 28px 20px;
+    z-index: 50;
+  }
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.65);
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .sidebar-nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .sidebar-nav-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* Content sits to the right of the fixed sidebar and fills the rest */
+  .app-layout {
+    max-width: none;
+    margin: 0;
+    padding-bottom: 0;
+    position: static;
+    margin-left: 240px;
+    min-height: 100vh;
+  }
+
+  .app-content {
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  .mobile-header {
+    display: none;
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}
