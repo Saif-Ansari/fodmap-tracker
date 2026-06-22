@@ -1,5 +1,7 @@
 # 🌿 FODMAP Tracker
 
+**Live:** https://fodmap-tracker-inky.vercel.app/
+
 A personal health tracking app for managing the [Monash University Low-FODMAP protocol](https://www.monashfodmap.com/) — a clinician-recommended dietary intervention for IBS and related gut conditions.
 
 Built as a real tool to solve a real problem: existing FODMAP apps are food lookup databases. None of them let you log meals, track symptoms, and analyse patterns over time.
