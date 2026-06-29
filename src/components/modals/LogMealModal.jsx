@@ -2,25 +2,32 @@ import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { S } from '../../constants/theme';
 import { MEAL_TIMES } from '../../constants/fodmap';
-import { timeNow } from '../../utils/dateHelpers';
+import { timeNow, fmt, today } from '../../utils/dateHelpers';
 
-const LogMealModal = ({ onClose, onSave }) => {
-  const [mealTime, setMealTime] = useState(MEAL_TIMES[0]);
-  const [time, setTime] = useState(timeNow());
-  const [foods, setFoods] = useState('');
-  const [notes, setNotes] = useState('');
+const LogMealModal = ({ onClose, onSave, initial = null, forDate }) => {
+  const [mealTime, setMealTime] = useState(initial?.mealTime || MEAL_TIMES[0]);
+  const [time, setTime] = useState(initial?.time || timeNow());
+  const [foods, setFoods] = useState(initial?.foods || '');
+  const [notes, setNotes] = useState(initial?.notes || '');
+
+  const isEdit = !!initial;
+  const isPastDate = forDate && forDate !== today();
 
   const save = () => {
     if (!foods.trim()) return;
-    onSave({ id: Date.now(), mealTime, time, foods: foods.trim(), notes: notes.trim() });
-    onClose();
+    onSave({ mealTime, time, foods: foods.trim(), notes: notes.trim() });
   };
 
   return (
     <div style={S.modal} onClick={onClose}>
       <div style={S.modalBox} onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <span style={S.modalTitle}>Log a Meal</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+          <div>
+            <span style={S.modalTitle}>{isEdit ? 'Edit Meal' : 'Log a Meal'}</span>
+            {isPastDate && (
+              <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>{fmt(forDate)}</div>
+            )}
+          </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}>
             <X size={22} />
           </button>
@@ -65,7 +72,7 @@ const LogMealModal = ({ onClose, onSave }) => {
         />
 
         <button style={S.btn} onClick={save}>
-          <Check size={18} /> Save Meal
+          <Check size={18} /> {isEdit ? 'Save Changes' : 'Save Meal'}
         </button>
       </div>
     </div>

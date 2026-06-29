@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchEntries, insertMeal, insertMovement, removeMeal, removeMovement, removeAll } from './useStorage';
+import { fetchEntries, insertMeal, insertMovement, updateMeal, updateMovement, removeMeal, removeMovement, removeAll } from './useStorage';
 import { today } from '../utils/dateHelpers';
 import { appendToSheet } from '../utils/sheetsSync';
 
@@ -26,24 +26,40 @@ export function useEntries(userId) {
     });
   };
 
-  const addMeal = async (meal) => {
-    const date = today();
-    const saved = await insertMeal(userId, date, meal);
-    upsertEntry(date, (e) => ({
+  const addMeal = async (meal, date) => {
+    const d = date || today();
+    const saved = await insertMeal(userId, d, meal);
+    upsertEntry(d, (e) => ({
       ...e,
       meals: [...e.meals, { id: saved.id, mealTime: saved.meal_time, time: saved.time, foods: saved.foods, notes: saved.notes || '' }],
     }));
-    appendToSheet({ date, type: 'Meal', time: meal.time, detail: `${meal.mealTime}: ${meal.foods}`, urgency: '', notes: meal.notes || '', minutesAfterWaking: '' });
+    appendToSheet({ date: d, type: 'Meal', time: meal.time, detail: `${meal.mealTime}: ${meal.foods}`, urgency: '', notes: meal.notes || '', minutesAfterWaking: '' });
   };
 
-  const addMovement = async (mov) => {
-    const date = today();
-    const saved = await insertMovement(userId, date, mov);
-    upsertEntry(date, (e) => ({
+  const addMovement = async (mov, date) => {
+    const d = date || today();
+    const saved = await insertMovement(userId, d, mov);
+    upsertEntry(d, (e) => ({
       ...e,
       movements: [...e.movements, { id: saved.id, time: saved.time, urgency: saved.urgency, notes: saved.notes || '', minutesAfterWaking: saved.minutes_after_waking }],
     }));
-    appendToSheet({ date, type: 'Movement', time: mov.time, detail: '', urgency: mov.urgency, notes: mov.notes || '', minutesAfterWaking: mov.minutesAfterWaking || '' });
+    appendToSheet({ date: d, type: 'Movement', time: mov.time, detail: '', urgency: mov.urgency, notes: mov.notes || '', minutesAfterWaking: mov.minutesAfterWaking || '' });
+  };
+
+  const editMeal = async (date, id, meal) => {
+    const saved = await updateMeal(userId, id, meal);
+    upsertEntry(date, (e) => ({
+      ...e,
+      meals: e.meals.map((m) => m.id === id ? { id: saved.id, mealTime: saved.meal_time, time: saved.time, foods: saved.foods, notes: saved.notes || '' } : m),
+    }));
+  };
+
+  const editMovement = async (date, id, mov) => {
+    const saved = await updateMovement(userId, id, mov);
+    upsertEntry(date, (e) => ({
+      ...e,
+      movements: e.movements.map((m) => m.id === id ? { id: saved.id, time: saved.time, urgency: saved.urgency, notes: saved.notes || '', minutesAfterWaking: saved.minutes_after_waking } : m),
+    }));
   };
 
   const deleteMeal = async (date, id) => {
@@ -63,5 +79,5 @@ export function useEntries(userId) {
     }
   };
 
-  return { data, loading, addMeal, addMovement, deleteMeal, deleteMovement, clearAll };
+  return { data, loading, addMeal, addMovement, editMeal, editMovement, deleteMeal, deleteMovement, clearAll };
 }

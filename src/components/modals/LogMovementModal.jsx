@@ -2,30 +2,36 @@ import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { S } from '../../constants/theme';
 import { URGENCY_LEVELS } from '../../constants/fodmap';
-import { timeNow } from '../../utils/dateHelpers';
+import { timeNow, fmt, today } from '../../utils/dateHelpers';
 
-const LogMovementModal = ({ onClose, onSave }) => {
-  const [time, setTime] = useState(timeNow());
-  const [urgency, setUrgency] = useState('medium');
-  const [notes, setNotes] = useState('');
-  const [minutesAfterWaking, setMinutesAfterWaking] = useState('');
+const LogMovementModal = ({ onClose, onSave, initial = null, forDate }) => {
+  const [time, setTime] = useState(initial?.time || timeNow());
+  const [urgency, setUrgency] = useState(initial?.urgency || 'medium');
+  const [notes, setNotes] = useState(initial?.notes || '');
+  const [minutesAfterWaking, setMinutesAfterWaking] = useState(initial?.minutesAfterWaking ?? '');
+
+  const isEdit = !!initial;
+  const isPastDate = forDate && forDate !== today();
 
   const save = () => {
     onSave({
-      id: Date.now(),
       time,
       urgency,
       notes: notes.trim(),
       minutesAfterWaking: minutesAfterWaking ? parseInt(minutesAfterWaking) : null,
     });
-    onClose();
   };
 
   return (
     <div style={S.modal} onClick={onClose}>
       <div style={S.modalBox} onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <span style={S.modalTitle}>Log a Movement</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+          <div>
+            <span style={S.modalTitle}>{isEdit ? 'Edit Movement' : 'Log a Movement'}</span>
+            {isPastDate && (
+              <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>{fmt(forDate)}</div>
+            )}
+          </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}>
             <X size={22} />
           </button>
@@ -86,7 +92,7 @@ const LogMovementModal = ({ onClose, onSave }) => {
         />
 
         <button style={S.btn} onClick={save}>
-          <Check size={18} /> Save Movement
+          <Check size={18} /> {isEdit ? 'Save Changes' : 'Save Movement'}
         </button>
       </div>
     </div>

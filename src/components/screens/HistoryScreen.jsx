@@ -1,31 +1,71 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2, Pencil, Plus } from 'lucide-react';
 import { S } from '../../constants/theme';
 import { URGENCY_LEVELS } from '../../constants/fodmap';
-import { fmt } from '../../utils/dateHelpers';
+import { fmt, today } from '../../utils/dateHelpers';
 
-const HistoryScreen = ({ data, onDeleteMeal, onDeleteMovement }) => {
+const iconBtn = { background: 'none', border: 'none', cursor: 'pointer', color: '#D1D5DB', padding: '0 4px' };
+
+const HistoryScreen = ({ data, onDeleteMeal, onDeleteMovement, onEditMeal, onEditMovement, onAddMeal, onAddMovement }) => {
   const [expandedDate, setExpandedDate] = useState(null);
+  const [pastDate, setPastDate] = useState('');
 
   const sortedEntries = [...data.entries]
     .filter((e) => e.meals.length > 0 || e.movements.length > 0)
     .sort((a, b) => b.date.localeCompare(a.date));
 
-  if (sortedEntries.length === 0) {
-    return (
-      <div style={{ padding: 16 }}>
+  const handlePastMeal = () => {
+    if (!pastDate) return;
+    onAddMeal(pastDate);
+    setPastDate('');
+  };
+
+  const handlePastMovement = () => {
+    if (!pastDate) return;
+    onAddMovement(pastDate);
+    setPastDate('');
+  };
+
+  return (
+    <div style={{ padding: '16px 16px 0' }}>
+      <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: '#111827' }}>History</div>
+
+      {/* Past date logger */}
+      <div style={{ ...S.card, marginBottom: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 10 }}>Log for a past date</div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <input
+            type="date"
+            value={pastDate}
+            max={today()}
+            onChange={(e) => setPastDate(e.target.value)}
+            style={{ ...S.input, margin: 0, flex: '1 1 140px' }}
+          />
+          <button
+            disabled={!pastDate}
+            onClick={handlePastMeal}
+            style={{ ...S.btn, flex: '1 1 80px', opacity: pastDate ? 1 : 0.4, padding: '10px 14px', fontSize: 13 }}
+          >
+            + Meal
+          </button>
+          <button
+            disabled={!pastDate}
+            onClick={handlePastMovement}
+            style={{ ...S.btn, flex: '1 1 100px', background: '#064e3b', opacity: pastDate ? 1 : 0.4, padding: '10px 14px', fontSize: 13 }}
+          >
+            + Movement
+          </button>
+        </div>
+      </div>
+
+      {sortedEntries.length === 0 && (
         <div style={S.emptyState}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>📋</div>
           <div style={{ fontSize: 15, fontWeight: 600 }}>No history yet</div>
           <div style={{ fontSize: 13, marginTop: 6 }}>Your logged days will appear here</div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div style={{ padding: '16px 16px 0' }}>
-      <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: '#111827' }}>History</div>
       {sortedEntries.map((entry) => {
         const isOpen = expandedDate === entry.date;
         const movCount = entry.movements.length;
@@ -74,12 +114,14 @@ const HistoryScreen = ({ data, onDeleteMeal, onDeleteMovement }) => {
                             </span>
                             {m.notes ? <span style={{ fontSize: 12, color: '#9CA3AF' }}>· {m.notes}</span> : null}
                           </div>
-                          <button
-                            onClick={() => onDeleteMovement(entry.date, m.id)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D1D5DB' }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <div style={{ display: 'flex', gap: 0 }}>
+                            <button onClick={() => onEditMovement(entry.date, m)} style={{ ...iconBtn, color: '#9CA3AF' }}>
+                              <Pencil size={13} />
+                            </button>
+                            <button onClick={() => onDeleteMovement(entry.date, m.id)} style={iconBtn}>
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -102,7 +144,7 @@ const HistoryScreen = ({ data, onDeleteMeal, onDeleteMovement }) => {
                     </div>
                     {entry.meals.map((m) => (
                       <div key={m.id} style={{ padding: '8px 0', borderBottom: '1px solid #F9FAFB' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 12, fontWeight: 600, color: '#0B6B5B' }}>
                               {m.mealTime} · {m.time}
@@ -110,17 +152,35 @@ const HistoryScreen = ({ data, onDeleteMeal, onDeleteMovement }) => {
                             <div style={{ fontSize: 13, color: '#374151', marginTop: 2 }}>{m.foods}</div>
                             {m.notes && <div style={{ fontSize: 12, color: '#9CA3AF' }}>{m.notes}</div>}
                           </div>
-                          <button
-                            onClick={() => onDeleteMeal(entry.date, m.id)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D1D5DB' }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <div style={{ display: 'flex', gap: 0, flexShrink: 0 }}>
+                            <button onClick={() => onEditMeal(entry.date, m)} style={{ ...iconBtn, color: '#9CA3AF' }}>
+                              <Pencil size={13} />
+                            </button>
+                            <button onClick={() => onDeleteMeal(entry.date, m.id)} style={iconBtn}>
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </>
                 )}
+
+                {/* Add to this day */}
+                <div style={{ display: 'flex', gap: 8, marginTop: 14, paddingTop: 12, borderTop: '1px solid #F3F4F6' }}>
+                  <button
+                    onClick={() => onAddMeal(entry.date)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '7px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#F9FAFB', color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    <Plus size={13} /> Meal
+                  </button>
+                  <button
+                    onClick={() => onAddMovement(entry.date)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '7px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#F9FAFB', color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    <Plus size={13} /> Movement
+                  </button>
+                </div>
               </div>
             )}
           </div>

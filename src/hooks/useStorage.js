@@ -60,6 +60,30 @@ export const removeMovement = async (userId, id) => {
   if (error) throw error;
 };
 
+export const updateMeal = async (userId, id, meal) => {
+  const { data, error } = await supabase
+    .from('meals')
+    .update({ meal_time: meal.mealTime, time: meal.time, foods: meal.foods, notes: meal.notes || null })
+    .eq('id', id)
+    .eq('user_id', userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+export const updateMovement = async (userId, id, mov) => {
+  const { data, error } = await supabase
+    .from('movements')
+    .update({ time: mov.time, urgency: mov.urgency, notes: mov.notes || null, minutes_after_waking: mov.minutesAfterWaking || null })
+    .eq('id', id)
+    .eq('user_id', userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
 export const removeAll = async (userId) => {
   await Promise.all([
     supabase.from('meals').delete().eq('user_id', userId),
